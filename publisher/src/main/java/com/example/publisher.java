@@ -3,35 +3,37 @@ package com.example;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
 public class publisher{
-    public static void main(String[] args) {
-        String broker = "tcp://test.mosquitto.org:1883";
-        String topic = "software/5100";
-        String clientId = "ASU-publisher";
+    private MqttClient client;
 
-        try{
-            MqttClient client = new MqttClient(broker, clientId);
-            client.connect();
-            System.out.println("Connected to broker " + broker);
+    // creates the client and connects.
+    public publisher(String broker, String clientId ) throws MqttSecurityException, MqttException{
+        client = new MqttClient(broker, clientId);
+        client.connect();
+        System.out.println("Connected to broker " + broker);
+    };
 
-            int counter = 0;
-            while(true){
-                String content = "This is counter = " + counter;
-                MqttMessage message = new MqttMessage(content.getBytes());
-                message.setQos(2);
+    // Returns true when successful false if not.
+    // publishes the message to the specific topic.
+    public boolean publish(String topic, String message, int QOS){
+        MqttMessage payload = new MqttMessage(message.getBytes());
+        payload.setQos(QOS);
 
-                if (client.isConnected()) {
-                    client.publish(topic, message);
-                    System.out.println("Message Published: " + content);
-                } else {
-                    System.out.println("Error: message not published.");
-                }
-                Thread.sleep(5000);
-                counter++;
+        try {
+            if (client.isConnected()){
+                client.publish(topic, payload);
+                return true;
             }
-        } catch (MqttException | InterruptedException e) {
+            else {
+                client.connect();
+                client.publish(topic, payload);
+                return true;
+            }
+        } catch (MqttException e) {
             e.printStackTrace();
+            return false;
         }
-    }
+    };
 }
