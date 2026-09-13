@@ -2,4 +2,7 @@
 target/
 
 # Other ignored paths
-/publisher/ASU-publisher-tcptestmosquittoorg1883/
+ASU-subscriber-tcptestmosquittoorg1883/
+ASU-publisher-tcptestmosquittoorg1883/
+
+output.txt

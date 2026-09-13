@@ -34,7 +34,7 @@ public class Subscriber implements MqttCallback, Runnable {
     public void messageArrived(String topic, MqttMessage mqttMessage) {
         String message = new String(mqttMessage.getPayload());
         buffer.add(message);
-        System.out.println(message);
+        // System.out.println(message);
     }
 
     @Override

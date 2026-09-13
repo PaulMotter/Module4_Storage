@@ -10,7 +10,7 @@ class main {
 
         // Input Parameters
         int QOS = 0;
-        double iterationsPerSecond = 100_000.0;
+        double iterationsPerSecond = 500.0;
 
         // Nanoseconds between iterations
         long intervalNano = (long) (1_000_000_000.0 / iterationsPerSecond);
@@ -29,13 +29,14 @@ class main {
         ArrayList<Integer> counterList = new ArrayList<>(
             Arrays.asList(0, 0, 0)
         );
+        long counter = 0;
 
         assert topicList.size() == counterList.size();
 
-        publisher pub = null;
+        Publisher pub = null;
 
         try {
-            pub = new publisher(broker, clientId);
+            pub = new Publisher(broker, clientId);
         } catch (MqttException e) {
             e.printStackTrace();
             System.exit(1);
@@ -45,11 +46,13 @@ class main {
             for (int i = 0; i < topicList.size(); i++) {
                 long iterationStart = System.nanoTime();
 
-                String message = topicList.get(i) + ": " + counterList.get(i);
+                // String message = topicList.get(i) + ": " + counterList.get(i);
+                String message = topicList.get(i) + ": " + counter;
                 System.out.println("-----\n" + message);
                 boolean success = pub.publish(topicList.get(i), message, QOS);
                 if (success) {
-                    counterList.set(i, counterList.get(i) + 1);
+                    // counterList.set(i, counterList.get(i) + 1);
+                    ++counter;
                 }
 
                 long iterationEnd = System.nanoTime();
@@ -67,7 +70,7 @@ class main {
         else {
             long waitTime = intervalGoal-intervalActual;
             Thread.sleep((waitTime) / 1_000_000); //in milliseconds
-            System.out.printf("Rate: %.2f (Maximum)\n", 1.0e9f/(float)intervalGoal);
+            System.out.printf("Rate: %.2f/s (Maximum)\n", 1.0e9f/(float)intervalGoal);
         }
     }
 }
