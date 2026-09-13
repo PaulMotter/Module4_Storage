@@ -1,3 +1,5 @@
-publisher/target/*
-subscriber/target/*
-publisher/ASU-publisher-tcptestmosquittoorg1883/*
+# Ignore all Maven build output directories, at any depth
+target/
+
+# Other ignored paths
+/publisher/ASU-publisher-tcptestmosquittoorg1883/
