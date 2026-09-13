@@ -1,41 +1,44 @@
 package com.example;
-
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class subscriber implements MqttCallback{
-    public static void main(String[] args) {
-        String broker = "tcp://test.mosquitto.org:1883";
-        String topic = "software/5100";
-        String clientId = "ASU-subscriber";
+public class Subscriber implements MqttCallback, Runnable {
+    MqttClient client;
+    String[] topic;
+    Buffer buffer;
 
-        try {
-            MqttClient client = new MqttClient(broker, clientId);
-            client.setCallback(new subscriber());
-            client.connect();
-            System.out.println("Connecteed to broker: " + broker);
-            client.subscribe(topic);
-            System.out.println("Subscribed to topic: " + topic);
-        }
-        catch (MqttException e) {
-            e.printStackTrace();
-        }
+    public Subscriber(MqttClient client, String[] topic, Buffer buffer) {
+        this.client = client;
+        this.topic = topic;
+        this.buffer = buffer;
     }
 
+    @Override
+    public void run() {
+        try {
+            client.setCallback(this);
+            client.connect();
+            client.subscribe(topic);
+
+        } catch (Exception e) {
+        }
+    }
     @Override
     public void connectionLost(Throwable throwable) {
-        System.out.println("Connection Lost: " + throwable.getMessage());
+        System.out.println("Connection lost: " + throwable.getMessage());
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) throws Exception {
-        System.out.println("Message arrived. Topic: " + topic + " Message: " + new String(message.getPayload()));
+    public void messageArrived(String topic, MqttMessage mqttMessage) {
+        String message = new String(mqttMessage.getPayload());
+        buffer.add(message);
+        System.out.println(message);
     }
 
     @Override
-    public void deliveryComplete(IMqttDeliveryToken token) {
+    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
     }
+
 }
