@@ -5,11 +5,11 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 
-public class publisher{
+public class Publisher{
     private MqttClient client;
 
     // creates the client and connects.
-    public publisher(String broker, String clientId ) throws MqttSecurityException, MqttException{
+    public Publisher(String broker, String clientId ) throws MqttSecurityException, MqttException{
         client = new MqttClient(broker, clientId);
         client.connect();
         System.out.println("Connected to broker " + broker);
