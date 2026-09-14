@@ -19,8 +19,6 @@ public class Buffer {
         List<String> list = new ArrayList<>();
         queue.drainTo(list);
         return list;
-
-
     }
 
 }

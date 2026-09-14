@@ -13,25 +13,16 @@ class main {
         double iterationsPerSecond = 500.0;
 
         // Nanoseconds between iterations
-        long intervalNano = (long) (1_000_000_000.0 / iterationsPerSecond);
+        long intervalGoal = (long) (1_000_000_000.0 / iterationsPerSecond);
 
         String broker = "tcp://test.mosquitto.org:1883";
         String clientId = "ASU-publisher";
 
         ArrayList<String> topicList = new ArrayList<>(
-            Arrays.asList(
-                "software/5100/Sensor1",
-                "software/5100/Sensor2",
-                "software/5100/Sensor3"
-            )
+            Arrays.asList("software/5100/Sensor1","software/5100/Sensor2","software/5100/Sensor3")
         );
 
-        ArrayList<Integer> counterList = new ArrayList<>(
-            Arrays.asList(0, 0, 0)
-        );
         long counter = 0;
-
-        assert topicList.size() == counterList.size();
 
         Publisher pub = null;
 
@@ -46,18 +37,16 @@ class main {
             for (int i = 0; i < topicList.size(); i++) {
                 long iterationStart = System.nanoTime();
 
-                // String message = topicList.get(i) + ": " + counterList.get(i);
                 String message = topicList.get(i) + ": " + counter;
-                System.out.println("-----\n" + message);
                 boolean success = pub.publish(topicList.get(i), message, QOS);
                 if (success) {
-                    // counterList.set(i, counterList.get(i) + 1);
+                    System.out.println("-----\n" + message);
                     ++counter;
                 }
 
                 long iterationEnd = System.nanoTime();
                 long elapsedNano = iterationEnd - iterationStart;
-                endIteration(intervalNano, elapsedNano);
+                endIteration(intervalGoal, elapsedNano);
             }
         }
     }
